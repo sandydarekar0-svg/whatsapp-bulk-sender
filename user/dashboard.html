@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - WhatsApp Bulk Sender</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-whatsapp"></i> WA Sender
+                </h4>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="send-message.html"><i class="bi bi-envelope"></i> Send Message</a></li>
+                <li><a href="templates.html"><i class="bi bi-file-text"></i> Templates</a></li>
+                <li><a href="campaigns.html"><i class="bi bi-arrow-repeat"></i> Campaigns</a></li>
+                <li><a href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
+                <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <nav class="topnav navbar navbar-expand-lg navbar-light bg-white">
+                <div class="container-fluid">
+                    <div class="navbar-brand">
+                        <span id="userName">User</span>'s Dashboard
+                    </div>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#creditsModal">
+                                <i class="bi bi-coin"></i> Credits: <strong id="credits">0</strong>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-4">
+                <!-- Quick Stats -->
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">Credits</h6>
+                                        <h3 id="creditsDisplay">0</h3>
+                                    </div>
+                                    <i class="bi bi-coin text-warning fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">Messages This Month</h6>
+                                        <h3 id="monthlyMessages">0</h3>
+                                    </div>
+                                    <i class="bi bi-chat-dots text-info fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">Campaigns</h6>
+                                        <h3 id="totalCampaigns">0</h3>
+                                    </div>
+                                    <i class="bi bi-arrow-repeat text-primary fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">API Key Status</h6>
+                                        <h3 id="apiStatus">--</h3>
+                                    </div>
+                                    <i class="bi bi-key text-success fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <a href="send-message.html" class="btn btn-primary me-2">
+                            <i class="bi bi-envelope"></i> Send Messages
+                        </a>
+                        <a href="templates.html" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-file-text"></i> Manage Templates
+                        </a>
+                        <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#buyCreditsModal">
+                            <i class="bi bi-plus-circle"></i> Buy Credits
+                        </button>
+                        <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#apiKeyModal">
+                            <i class="bi bi-key"></i> API Keys
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Campaigns -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Recent Campaigns</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentCampaigns">
+                            <div class="text-center py-4">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Credits Modal -->
+    <div class="modal fade" id="buyCreditsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Buy Credits</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <button class="btn btn-outline-primary w-100 credit-pkg" data-credits="100" data-price="5">
+                                <strong>100</strong> Credits<br><small>$5</small>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-primary w-100 credit-pkg" data-credits="500" data-price="20">
+                                <strong>500</strong> Credits<br><small>$20</small>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <button class="btn btn-outline-primary w-100 credit-pkg" data-credits="1000" data-price="35">
+                                <strong>1000</strong> Credits<br><small>$35</small>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-primary w-100 credit-pkg" data-credits="5000" data-price="150">
+                                <strong>5000</strong> Credits<br><small>$150</small>
+                            </button>
+                        </div>
+                    </div>
+                    <form id="creditForm">
+                        <div class="mb-3">
+                            <label class="form-label">Custom Amount (Credits)</label>
+                            <input type="number" class="form-control" id="customCredits" min="10">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Proceed to Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div class="modal fade" id="apiKeyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">API Keys</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#newApiKeyModal">
+                        <i class="bi bi-plus-circle"></i> Generate New Key
+                    </button>
+                    <div id="apiKeysList">
+                        <div class="text-center py-4">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New API Key Modal -->
+    <div class="modal fade" id="newApiKeyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Generate API Key</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newApiKeyForm">
+                        <div class="mb-3">
+                            <label class="form-label">Key Name</label>
+                            <input type="text" class="form-control" name="key_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rate Limit (requests/min)</label>
+                            <input type="number" class="form-control" name="rate_limit" value="100">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Webhook URL (Optional)</label>
+                            <input type="url" class="form-control" name="webhook_url">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Generate</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script>
+        let selectedCredits = 0;
+        let selectedPrice = 0;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const user = await apiCall('/api/user/profile', 'GET', null, token);
+                document.getElementById('userName').textContent = user.data.username;
+                document.getElementById('credits').textContent = user.data.credits;
+                document.getElementById('creditsDisplay').textContent = user.data.credits;
+
+                // Load dashboard data
+                const dashboard = await apiCall('/api/user/dashboard', 'GET', null, token);
+                document.getElementById('monthlyMessages').textContent = dashboard.data.monthly_messages;
+                document.getElementById('totalCampaigns').textContent = dashboard.data.total_campaigns;
+                document.getElementById('apiStatus').textContent = dashboard.data.api_status ? 'Active' : 'Inactive';
+
+                // Load recent campaigns
+                loadRecentCampaigns(dashboard.data.recent_campaigns);
+
+                // Load API keys
+                loadApiKeys(token);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        // Credit package selection
+        document.querySelectorAll('.credit-pkg').forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedCredits = this.dataset.credits;
+                selectedPrice = this.dataset.price;
+                document.getElementById('customCredits').value = selectedCredits;
+            });
+        });
+
+        // New API Key Form
+        document.getElementById('newApiKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await apiCall('/api/user/api-keys', 'POST', Object.fromEntries(formData), token);
+                if (response.success) {
+                    showAlert('API Key generated successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('newApiKeyModal')).hide();
+                    loadApiKeys(token);
+                    e.target.reset();
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        });
+
+        async function loadRecentCampaigns(campaigns) {
+            const container = document.getElementById('recentCampaigns');
+            if (!campaigns || campaigns.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted">No campaigns yet</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Campaign</th>
+                            <th>Status</th>
+                            <th>Sent/Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${campaigns.map(c => `
+                            <tr>
+                                <td>${c.campaign_name}</td>
+                                <td><span class="badge bg-${getStatusColor(c.status)}">${c.status}</span></td>
+                                <td>${c.sent_count}/${c.total_contacts}</td>
+                                <td>
+                                    <a href="campaigns.html?id=${c.id}" class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function loadApiKeys(token) {
+            try {
+                const response = await apiCall('/api/user/api-keys', 'GET', null, token);
+                const container = document.getElementById('apiKeysList');
+                
+                if (!response.data || response.data.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted">No API keys generated</div>';
+                    return;
+                }
+
+                container.innerHTML = response.data.map(key => `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">${key.key_name}</h6>
+                                    <small class="text-muted">
+                                        Key: ${key.api_key.substring(0, 10)}...
+                                    </small>
+                                </div>
+                                <span class="badge bg-${key.status === 'active' ? 'success' : 'danger'}">${key.status}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading API keys:', error);
+            }
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'sent': 'success',
+                'pending': 'warning',
+                'failed': 'danger',
+                'draft': 'secondary',
+                'running': 'info'
+            };
+            return colors[status] || 'secondary';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

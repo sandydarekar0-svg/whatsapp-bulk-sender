@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Messages - WhatsApp Bulk Sender</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h4 class="mb-0"><i class="bi bi-whatsapp"></i> WA Sender</h4>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li><a href="send-message.html" class="active"><i class="bi bi-envelope"></i> Send Message</a></li>
+                <li><a href="templates.html"><i class="bi bi-file-text"></i> Templates</a></li>
+                <li><a href="campaigns.html"><i class="bi bi-arrow-repeat"></i> Campaigns</a></li>
+                <li><a href="history.html"><i class="bi bi-clock-history"></i> History</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <nav class="topnav navbar navbar-expand-lg navbar-light bg-white">
+                <div class="container-fluid">
+                    <div class="navbar-brand">Send Messages</div>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-4">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#quickSend" data-bs-toggle="tab">Quick Send</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#bulkSend" data-bs-toggle="tab">Bulk Send</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <!-- Quick Send Tab -->
+                                    <div class="tab-pane fade show active" id="quickSend">
+                                        <form id="quickSendForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Phone Number</label>
+                                                <input type="tel" class="form-control" name="phone" placeholder="+1234567890" required>
+                                                <small class="text-muted">Include country code</small>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Message Type</label>
+                                                <select class="form-select" id="messageType" name="message_type" required>
+                                                    <option value="text">Text Message</option>
+                                                    <option value="template">Template Message</option>
+                                                    <option value="media">Media Message</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Text Message -->
+                                            <div id="textMessageSection" class="mb-3">
+                                                <label class="form-label">Message Content</label>
+                                                <textarea class="form-control" name="message" rows="4" placeholder="Type your message here..."></textarea>
+                                                <small class="text-muted d-block mt-2">
+                                                    <span id="charCount">0</span>/160 characters
+                                                </small>
+                                            </div>
+
+                                            <!-- Template Section (hidden by default) -->
+                                            <div id="templateSection" class="mb-3" style="display:none;">
+                                                <label class="form-label">Select Template</label>
+                                                <select class="form-select" name="template_id" id="templateSelect">
+                                                    <option value="">Loading templates...</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Media Section (hidden by default) -->
+                                            <div id="mediaSection" class="mb-3" style="display:none;">
+                                                <label class="form-label">Media File</label>
+                                                <input type="file" class="form-control" name="media" accept="image/*,video/*,application/pdf">
+                                                <label class="form-label mt-3">Caption</label>
+                                                <textarea class="form-control" name="media_caption" rows="2"></textarea>
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-send"></i> Send Message
+                                                </button>
+                                                <button type="reset" class="btn btn-outline-secondary">Clear</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!-- Bulk Send Tab -->
+                                    <div class="tab-pane fade" id="bulkSend">
+                                        <form id="bulkSendForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Campaign Name</label>
+                                                <input type="text" class="form-control" name="campaign_name" placeholder="My Campaign" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Upload Contacts (CSV)</label>
+                                                <input type="file" class="form-control" id="csvFile" accept=".csv" required>
+                                                <small class="text-muted">Format: phone, name, variable1, variable2...</small>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Select Template</label>
+                                                <select class="form-select" name="template_id" id="bulkTemplateSelect" required>
+                                                    <option value="">Loading templates...</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Schedule Send (Optional)</label>
+                                                <input type="datetime-local" class="form-control" name="scheduled_time">
+                                            </div>
+
+                                            <div class="card bg-light">
+                                                <div class="card-body">
+                                                    <h6>Preview</h6>
+                                                    <div id="csvPreview">
+                                                        <p class="text-muted">Upload CSV to see preview</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex gap-2 mt-3">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-arrow-repeat"></i> Start Campaign
+                                                </button>
+                                                <button type="reset" class="btn btn-outline-secondary">Clear</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+
+        // Load templates on page load
+        document.addEventListener('DOMContentLoaded', loadTemplates);
+
+        // Message type selector
+        document.getElementById('messageType').addEventListener('change', (e) => {
+            document.getElementById('textMessageSection').style.display = e.target.value === 'text' ? 'block' : 'none';
+            document.getElementById('templateSection').style.display = e.target.value === 'template' ? 'block' : 'none';
+            document.getElementById('mediaSection').style.display = e.target.value === 'media' ? 'block' : 'none';
+        });
+
+        // Character counter
+        document.querySelector('textarea[name="message"]')?.addEventListener('input', (e) => {
+            document.getElementById('charCount').textContent = e.target.value.length;
+        });
+
+        // Quick Send Form
+        document.getElementById('quickSendForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await apiCall('/api/messages/send', 'POST', data, token);
+                if (response.success) {
+                    showAlert('Message sent successfully!', 'success');
+                    e.target.reset();
+                } else {
+                    showAlert(response.message || 'Error sending message', 'danger');
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        });
+
+        // Bulk Send Form
+        document.getElementById('bulkSendForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            formData.append('contacts', document.getElementById('csvFile').files[0]);
+
+            try {
+                const response = await apiCall('/api/campaigns/create', 'POST', formData, token);
+                if (response.success) {
+                    showAlert('Campaign created successfully!', 'success');
+                    window.location.href = `campaigns.html?id=${response.campaign_id}`;
+                } else {
+                    showAlert(response.message || 'Error creating campaign', 'danger');
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        });
+
+        // CSV Preview
+        document.getElementById('csvFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (event) => {
+                const csv = event.target.result;
+                const rows = csv.split('\n').slice(0, 6);
+                const preview = rows.map(row => {
+                    const cols = row.split(',');
+                    return `<div class="py-1">${cols.join(' | ')}</div>`;
+                }).join('');
+                
+                document.getElementById('csvPreview').innerHTML = preview;
+            };
+            
+            reader.readAsText(file);
+        });
+
+        async function loadTemplates() {
+            try {
+                const response = await apiCall('/api/templates', 'GET', null, token);
+                if (response.success && response.data) {
+                    const options = response.data.map(t => 
+                        `<option value="${t.id}">${t.template_name}</option>`
+                    ).join('');
+                    
+                    document.getElementById('templateSelect').innerHTML = '<option value="">Select a template</option>' + options;
+                    document.getElementById('bulkTemplateSelect').innerHTML = '<option value="">Select a template</option>' + options;
+                }
+            } catch (error) {
+                console.error('Error loading templates:', error);
+            }
+        }
+    </script>
+</body>
+</html>
